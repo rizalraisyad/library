@@ -1,10 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { allConfig } from './config/all.config';
+import { DatabaseModule } from './db';
+import { BookModule } from './domains/book/book.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: `.env.${process.env.NODE_ENV}`,
+      load: [allConfig],
+      isGlobal: true,
+    }),
+    DatabaseModule,
+    BookModule,
+  ],
 })
 export class AppModule {}
