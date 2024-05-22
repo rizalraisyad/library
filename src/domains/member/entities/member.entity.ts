@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Borrowing } from '../../borrowing/entity/borrowing.entity';
 import { BaseJsonApiEntity } from '../../commons/entities/abstract-base-json-api.entity';
+import { CreateMemberDto } from '../models/create-member.dto';
 
 @Entity({ name: 'member' })
 export class Member extends BaseJsonApiEntity {
@@ -11,7 +12,7 @@ export class Member extends BaseJsonApiEntity {
   name: string;
 
   @Column({ name: 'penalty_status', nullable: false })
-  penaltyStatus: string;
+  penaltyStatus: boolean;
 
   @Column({ name: 'penalty_end_date', nullable: true })
   penaltyEndDate: string;
@@ -22,5 +23,11 @@ export class Member extends BaseJsonApiEntity {
   constructor(args: Partial<Member>) {
     super();
     Object.assign(this, args);
+  }
+
+  createFromDto(input: CreateMemberDto): void {
+    this.code = input.code?.trim();
+    this.name = input.name?.trim();
+    this.penaltyStatus = false;
   }
 }

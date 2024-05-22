@@ -14,4 +14,14 @@ export abstract class BaseJsonApiEntity {
 
   @UpdateDateColumn({ name: 'updated_at', default: setDefaultTimestamp })
   updatedAt: Date;
+
+  getAttributes(): string[] {
+    const attributes: string[] = [];
+    for (const key in this) {
+      if (Object.prototype.hasOwnProperty.call(this, key)) {
+        attributes.push(key);
+      }
+    }
+    return attributes;
+  }
 }
