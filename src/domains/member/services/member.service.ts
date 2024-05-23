@@ -10,7 +10,15 @@ export class MemberService {
     private readonly memberRepo: IMemberRepository,
   ) {}
 
-  async createMember(input: Member): Promise<Member> {
+  async findMemberById(id: string): Promise<Member> {
+    return await this.memberRepo.findMemberById(id);
+  }
+
+  async findMembersWithBorrowingCount(): Promise<Member[]> {
+    return await this.memberRepo.findMembersWithBorrowingCount();
+  }
+
+  async saveMember(input: Member): Promise<Member> {
     return await this.memberRepo.saveMember(input);
   }
 

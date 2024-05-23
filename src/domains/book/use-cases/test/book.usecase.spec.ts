@@ -36,7 +36,7 @@ describe('BookUseCase', () => {
         availableQuantity: 1,
         borrowedQuantity: 0,
       } as Book;
-      jest.spyOn(bookService, 'findBookByCode').mockResolvedValue([]);
+      jest.spyOn(bookService, 'findBookByCode').mockResolvedValue(null);
       jest.spyOn(bookService, 'createBook').mockResolvedValue(responseBook);
 
       expect(await bookUseCase.createBook(inputBook)).toBe(responseBook);
@@ -66,9 +66,7 @@ describe('BookUseCase', () => {
       newErr.detail = `Book with code: ${inputBook.code} already exist`;
       expectedErrorResponse.errors = [newErr];
 
-      jest
-        .spyOn(bookService, 'findBookByCode')
-        .mockResolvedValue([responseBook]);
+      jest.spyOn(bookService, 'findBookByCode').mockResolvedValue(responseBook);
 
       await expect(bookUseCase.createBook(inputBook)).rejects.toThrow(
         BadRequestException,
@@ -80,6 +78,17 @@ describe('BookUseCase', () => {
         expect(error).toBeInstanceOf(BadRequestException);
         expect(error.response).toEqual(expectedErrorResponse);
       }
+    });
+  });
+
+  describe('getBook', () => {
+    it('should return a list of books', async () => {
+      const books = [new Book({}), new Book({}), new Book({})];
+      jest.spyOn(bookService, 'findBooks').mockResolvedValue(books);
+
+      const result = await bookUseCase.getBook();
+
+      expect(result).toEqual(books);
     });
   });
 });

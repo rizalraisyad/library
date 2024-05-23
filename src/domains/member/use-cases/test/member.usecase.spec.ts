@@ -28,9 +28,7 @@ describe('MemberUseCase', () => {
         code: 'T',
       } as Member;
       jest.spyOn(memberService, 'findMemberByCode').mockResolvedValue([]);
-      jest
-        .spyOn(memberService, 'createMember')
-        .mockResolvedValue(responseMember);
+      jest.spyOn(memberService, 'saveMember').mockResolvedValue(responseMember);
 
       expect(await memberUseCase.createMember(inputMember)).toBe(
         responseMember,
@@ -66,6 +64,90 @@ describe('MemberUseCase', () => {
         expect(error).toBeInstanceOf(BadRequestException);
         expect(error.response).toEqual(expectedErrorResponse);
       }
+    });
+  });
+
+  describe('validateMemberStatus', () => {
+    it('should validate member status and remove penalty if applicable', async () => {
+      const member = new Member({});
+      member.penaltyStatus = true;
+      member.penaltyEndDate = new Date(Date.now() - 86400000);
+      jest.spyOn(memberService, 'saveMember').mockResolvedValue(member);
+
+      const result = await memberUseCase.validateMemberStatus(member);
+
+      expect(result.penaltyStatus).toBe(false);
+      expect(result.penaltyEndDate).toBe(null);
+    });
+
+    it('should not remove penalty if member is still under penalty', async () => {
+      const member = new Member({});
+      member.penaltyStatus = true;
+      member.penaltyEndDate = new Date(Date.now() + 86400000); // Penalty ends tomorrow
+      jest.spyOn(memberService, 'saveMember').mockResolvedValue(member);
+
+      const result = await memberUseCase.validateMemberStatus(member);
+
+      expect(result.penaltyStatus).toBe(true);
+      expect(result.penaltyEndDate).not.toBe(null);
+    });
+  });
+
+  describe('applyPenalty', () => {
+    it('should apply penalty to a member', async () => {
+      const memberId = '1';
+      const member = new Member({});
+      jest.spyOn(memberService, 'findMemberById').mockResolvedValue(member);
+      jest.spyOn(member, 'applyPenalty');
+      jest.spyOn(memberService, 'saveMember').mockResolvedValue(member);
+
+      const result = await memberUseCase.applyPenalty(memberId);
+
+      expect(member.applyPenalty).toHaveBeenCalled();
+      expect(result).toEqual(member);
+    });
+  });
+
+  describe('isMemberBeingPenalized', () => {
+    it('should return true if member is being penalized', async () => {
+      const memberId = '1';
+      const member = new Member({});
+      member.penaltyStatus = true;
+      jest.spyOn(memberService, 'findMemberById').mockResolvedValue(member);
+      jest
+        .spyOn(memberUseCase, 'validateMemberStatus')
+        .mockResolvedValue(member);
+
+      const result = await memberUseCase.isMemberBeingPenalized(memberId);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false if member is not being penalized', async () => {
+      const memberId = '1';
+      const member = new Member({});
+      member.penaltyStatus = false;
+      jest.spyOn(memberService, 'findMemberById').mockResolvedValue(member);
+      jest
+        .spyOn(memberUseCase, 'validateMemberStatus')
+        .mockResolvedValue(member);
+
+      const result = await memberUseCase.isMemberBeingPenalized(memberId);
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('getMemberWithBorrowingCount', () => {
+    it('should return a list of members with borrowing count', async () => {
+      const members = [new Member({}), new Member({}), new Member({})];
+      jest
+        .spyOn(memberService, 'findMembersWithBorrowingCount')
+        .mockResolvedValue(members);
+
+      const result = await memberUseCase.getMemberWithBorrowingCount();
+
+      expect(result).toEqual(members);
     });
   });
 });

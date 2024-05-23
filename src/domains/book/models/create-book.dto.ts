@@ -1,7 +1,6 @@
 import { ErrorResponse } from '../../../exceptions/models/error-object';
 import validator from 'validator';
 import { buildErrorObject } from '../../commons/functions/build-error-object';
-
 export interface CreateBookDto {
   code: string;
   title: string;

@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InitiateBookMemberBorrowingTables1716406387097
+export class InitiateBookMemberBorrowingTables1716447349389
   implements MigrationInterface
 {
-  name = 'InitiateBookMemberBorrowingTables1716406387097';
+  name = 'InitiateBookMemberBorrowingTables1716447349389';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -26,9 +26,9 @@ export class InitiateBookMemberBorrowingTables1716406387097
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-                "borrow_date" character varying NOT NULL,
-                "return_date" character varying,
-                "due_date" character varying NOT NULL,
+                "borrow_date" TIMESTAMP NOT NULL,
+                "return_date" TIMESTAMP,
+                "due_date" TIMESTAMP NOT NULL,
                 "is_returned" boolean NOT NULL,
                 "book_id" uuid NOT NULL,
                 "member_id" uuid NOT NULL,
@@ -43,7 +43,7 @@ export class InitiateBookMemberBorrowingTables1716406387097
                 "code" character varying NOT NULL,
                 "name" character varying NOT NULL,
                 "penalty_status" boolean NOT NULL,
-                "penalty_end_date" character varying,
+                "penalty_end_date" TIMESTAMP,
                 CONSTRAINT "UQ_87dbb39d7c7c430faa5bf1af3bb" UNIQUE ("code"),
                 CONSTRAINT "PK_97cbbe986ce9d14ca5894fdc072" PRIMARY KEY ("id")
             )

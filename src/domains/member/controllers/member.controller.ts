@@ -2,9 +2,12 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Inject,
   Post,
 } from '@nestjs/common';
+import { toJsonApi } from 'src/domains/commons/functions/to-json-api';
+import { JsonApiResponse } from 'src/domains/commons/models/json-api-response';
 import { jsonApiDeserialize } from '../../commons/functions/json-api-deserialize';
 import { Member } from '../entities/member.entity';
 import { MEMBER_USECASE } from '../member.constant';
@@ -22,7 +25,9 @@ export class MemberController {
   ) {}
 
   @Post('/member')
-  async createMember(@Body() payload: unknown): Promise<Member> {
+  async createMember(
+    @Body() payload: unknown,
+  ): Promise<JsonApiResponse<Member>> {
     const input = jsonApiDeserialize<CreateMemberDto>(payload);
 
     const er = validateCreateMemberDto(input);
@@ -31,6 +36,12 @@ export class MemberController {
     }
 
     const book = await this.memberUseCase.createMember(input);
-    return book;
+    return toJsonApi(book);
+  }
+
+  @Get('/members')
+  async members(): Promise<JsonApiResponse<Member[]>> {
+    const book = await this.memberUseCase.getMemberWithBorrowingCount();
+    return toJsonApi(book);
   }
 }

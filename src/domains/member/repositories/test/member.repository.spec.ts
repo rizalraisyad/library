@@ -60,4 +60,63 @@ describe('MemberRepository', () => {
       expect(result).toEqual(member);
     });
   });
+
+  describe('findMembersWithBorrowingCount', () => {
+    it('should return a list of members with borrowing count', async () => {
+      const rawResults = [
+        {
+          member_id: '1',
+          member_code: 'T1',
+          member_name: 'Test 1',
+          member_penaltyStatus: false,
+          member_penaltyEndDate: null,
+          borrowingCount: '2',
+        },
+        {
+          member_id: '2',
+          member_code: 'T2',
+          member_name: 'Test 2',
+          member_penaltyStatus: true,
+          member_penaltyEndDate: new Date(),
+          borrowingCount: '1',
+        },
+      ];
+      const queryBuilder: any = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        addGroupBy: jest.fn().mockReturnThis(),
+        getRawMany: jest.fn().mockResolvedValue(rawResults),
+      };
+
+      jest.spyOn(manager, 'createQueryBuilder').mockReturnValue(queryBuilder);
+
+      await memberRepository.findMembersWithBorrowingCount();
+
+      expect(manager.createQueryBuilder).toHaveBeenCalledWith(Member, 'member');
+      expect(queryBuilder.leftJoinAndSelect).toHaveBeenCalledWith(
+        'member.borrowingList',
+        'borrowing',
+        'borrowing.isReturned = :isReturned',
+        { isReturned: false },
+      );
+      expect(queryBuilder.select).toHaveBeenCalledWith([
+        'member.id',
+        'member.code',
+        'member.name',
+        'member.penaltyStatus',
+        'member.penaltyEndDate',
+        'COUNT(borrowing.id) AS borrowingCount',
+      ]);
+      expect(queryBuilder.groupBy).toHaveBeenCalledWith('member.id');
+      expect(queryBuilder.addGroupBy).toHaveBeenCalledWith('member.code');
+      expect(queryBuilder.addGroupBy).toHaveBeenCalledWith('member.name');
+      expect(queryBuilder.addGroupBy).toHaveBeenCalledWith(
+        'member.penaltyStatus',
+      );
+      expect(queryBuilder.addGroupBy).toHaveBeenCalledWith(
+        'member.penaltyEndDate',
+      );
+    });
+  });
 });

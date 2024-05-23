@@ -32,7 +32,7 @@ describe('BookRepository', () => {
       book.code = code;
       const queryBuilder: any = {
         where: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([book]),
+        getOne: jest.fn().mockResolvedValue([book]),
       };
 
       jest.spyOn(manager, 'createQueryBuilder').mockReturnValue(queryBuilder);
@@ -57,6 +57,42 @@ describe('BookRepository', () => {
       const result = await bookRepository.saveBook(book);
 
       expect(bookRepository.saveOne).toHaveBeenCalledWith(book);
+      expect(result).toEqual(book);
+    });
+  });
+
+  describe('findBooks', () => {
+    it('should return all books', async () => {
+      const books = [new Book({}), new Book({}), new Book({})];
+      const queryBuilder: any = {
+        getMany: jest.fn().mockResolvedValue(books),
+      };
+      jest.spyOn(manager, 'createQueryBuilder').mockReturnValue(queryBuilder);
+
+      const result = await bookRepository.findBooks();
+
+      expect(manager.createQueryBuilder).toHaveBeenCalledWith(Book, 'b');
+      expect(result).toEqual(books);
+    });
+  });
+
+  describe('findBookById', () => {
+    it('should return a book with the given ID', async () => {
+      const bookId = '1';
+      const book = new Book({});
+      const queryBuilder: any = {
+        where: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(book),
+      };
+      jest.spyOn(manager, 'createQueryBuilder').mockReturnValue(queryBuilder);
+
+      const result = await bookRepository.findBookById(bookId);
+
+      expect(manager.createQueryBuilder).toHaveBeenCalledWith(Book, 'b');
+      expect(queryBuilder.where).toHaveBeenCalledWith(
+        'b.id::text like :bookId',
+        { bookId },
+      );
       expect(result).toEqual(book);
     });
   });

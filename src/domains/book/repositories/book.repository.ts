@@ -12,11 +12,21 @@ export class BookRepository
   constructor(manager: EntityManager) {
     super(manager, Book);
   }
-  async findBookByCode(code: string): Promise<Book[]> {
+  async findBooks(): Promise<Book[]> {
+    const qb = this.manager.createQueryBuilder(this.Entity, 'b');
+    return await qb.getMany();
+  }
+
+  async findBookById(bookId: string): Promise<Book> {
+    const qb = this.manager.createQueryBuilder(this.Entity, 'b');
+    qb.where('b.id::text like :bookId', { bookId: bookId });
+    return await qb.getOne();
+  }
+  async findBookByCode(code: string): Promise<Book> {
     const qb = this.manager.createQueryBuilder(this.Entity, 'b');
     qb.where('b.code like :code', { code: code });
 
-    return await qb.getMany();
+    return await qb.getOne();
   }
 
   async saveBook(book: Book): Promise<Book> {

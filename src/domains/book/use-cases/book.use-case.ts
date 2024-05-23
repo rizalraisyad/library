@@ -20,7 +20,7 @@ export class BookUseCase {
     const errorResp = new ErrorResponse();
     errorResp.errors = [];
 
-    if (books.length > 0) {
+    if (books) {
       const newErr = new ErrorObject();
       (newErr.title = 'Create Book Failed'),
         (newErr.detail = `Book with code: ${input.code} already exist`);
@@ -39,5 +39,9 @@ export class BookUseCase {
     book.createFromDto(input);
 
     return this.bookService.createBook(book);
+  }
+
+  async getBook(): Promise<Book[]> {
+    return this.bookService.findBooks();
   }
 }

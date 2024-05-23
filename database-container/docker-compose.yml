@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15.6
+    environment:
+      POSTGRES_DB: library
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - ./database/postgres/docker-entrypoint-initdb:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"

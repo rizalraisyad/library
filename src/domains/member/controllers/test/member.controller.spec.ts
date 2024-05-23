@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { mock, mockClear } from 'jest-mock-extended';
 import { jsonApiDeserialize } from 'src/domains/commons/functions/json-api-deserialize';
+import { toJsonApi } from 'src/domains/commons/functions/to-json-api';
 import { Member } from '../../entities/member.entity';
 import {
   CreateMemberDto,
@@ -13,15 +14,15 @@ jest.mock('../../../commons/functions/json-api-deserialize');
 jest.mock('../../models/create-member.dto');
 
 describe('MemberController', () => {
-  let bookController: MemberController;
-  const bookUseCase = mock<MemberUseCase>();
+  let memberController: MemberController;
+  const memberUseCase = mock<MemberUseCase>();
 
   beforeEach(() => {
-    bookController = new MemberController(bookUseCase);
+    memberController = new MemberController(memberUseCase);
   });
 
   afterEach(() => {
-    mockClear(bookUseCase);
+    mockClear(memberUseCase);
   });
 
   describe('createMember', () => {
@@ -47,14 +48,14 @@ describe('MemberController', () => {
 
       (jsonApiDeserialize as jest.Mock).mockReturnValue(input);
       (validateCreateMemberDto as jest.Mock).mockReturnValue({ errors: [] });
-      (bookUseCase.createMember as jest.Mock).mockResolvedValue(book);
+      (memberUseCase.createMember as jest.Mock).mockResolvedValue(book);
 
-      const result = await bookController.createMember(payload);
+      const result = await memberController.createMember(payload);
 
       expect(jsonApiDeserialize).toHaveBeenCalledWith(payload);
       expect(validateCreateMemberDto).toHaveBeenCalledWith(input);
-      expect(bookUseCase.createMember).toHaveBeenCalledWith(input);
-      expect(result).toEqual(book);
+      expect(memberUseCase.createMember).toHaveBeenCalledWith(input);
+      expect(result).toEqual(toJsonApi(book));
     });
 
     it('should throw BadRequestException if validation fails', async () => {
@@ -80,16 +81,29 @@ describe('MemberController', () => {
       (jsonApiDeserialize as jest.Mock).mockReturnValue(input);
       (validateCreateMemberDto as jest.Mock).mockReturnValue(validationError);
 
-      await expect(bookController.createMember(payload)).rejects.toThrow(
+      await expect(memberController.createMember(payload)).rejects.toThrow(
         BadRequestException,
       );
-      await expect(bookController.createMember(payload)).rejects.toThrow(
+      await expect(memberController.createMember(payload)).rejects.toThrow(
         expect.objectContaining({ response: validationError }),
       );
 
       expect(jsonApiDeserialize).toHaveBeenCalledWith(payload);
       expect(validateCreateMemberDto).toHaveBeenCalledWith(input);
-      expect(bookUseCase.createMember).not.toHaveBeenCalled();
+      expect(memberUseCase.createMember).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getMember', () => {
+    it('should return a list of members', async () => {
+      const members = [new Member({}), new Member({}), new Member({})];
+      jest
+        .spyOn(memberUseCase, 'getMemberWithBorrowingCount')
+        .mockResolvedValue(members);
+
+      const result = await memberController.members();
+
+      expect(result).toEqual(toJsonApi(members));
     });
   });
 });

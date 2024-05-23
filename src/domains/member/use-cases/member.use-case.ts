@@ -38,6 +38,44 @@ export class MemberUseCase {
     const book = new Member({});
     book.createFromDto(input);
 
-    return this.memberService.createMember(book);
+    return this.memberService.saveMember(book);
+  }
+
+  async getMemberWithBorrowingCount(): Promise<Member[]> {
+    return this.memberService.findMembersWithBorrowingCount();
+  }
+
+  async validateMemberStatus(member: Member): Promise<Member> {
+    if (member.penaltyStatus || member.penaltyEndDate) {
+      if (member.isMemberUnderPenalty()) {
+        member.penaltyStatus = false;
+        member.penaltyEndDate = null;
+        const validatedMember = await this.memberService.saveMember(member);
+        return validatedMember;
+      }
+    }
+
+    return member;
+  }
+
+  async isMemberBeingPenalized(id: string): Promise<boolean> {
+    const member = await this.memberService.findMemberById(id);
+    if (member === null) {
+      const errorResp = new ErrorResponse();
+      errorResp.errors = [];
+      const newErr = new ErrorObject();
+      (newErr.title = 'Validate Member Failed'),
+        (newErr.detail = `Member with code: ${id} not found`);
+      errorResp.errors.push(newErr);
+      throw new BadRequestException(errorResp);
+    }
+    const validateMember = await this.validateMemberStatus(member);
+    return validateMember.penaltyStatus;
+  }
+
+  async applyPenalty(memberId: string): Promise<Member> {
+    const member = await this.memberService.findMemberById(memberId);
+    member.applyPenalty();
+    return await this.memberService.saveMember(member);
   }
 }

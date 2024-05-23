@@ -1,0 +1,537 @@
+openapi: 3.0.0
+info:
+  title: Your API Title
+  description: Your API Description
+  version: 1.0.0
+paths:
+  /books:
+    post:
+      summary: Create a new book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: "CreateBookDto"
+                    attributes:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          example: "test"
+                        author:
+                          type: string
+                          example: "asdsssss"
+                        code:
+                          type: string
+                          example: "dddd"
+                        stock:
+                          type: number
+                          example: 2
+              required:
+                - data
+      responses:
+        '201':
+          description: Book created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: "book"
+                      id:
+                        type: string
+                        format: uuid
+                        example: "95e7731f-170d-4744-bb91-81e3cd1e6203"
+                      attributes:
+                        type: object
+                        properties:
+                          author:
+                            type: string
+                            example: "asdsssss"
+                          title:
+                            type: string
+                            example: "test"
+                          stock:
+                            type: number
+                            example: 2
+                          code:
+                            type: string
+                            example: "ddddss"
+                          availableQuantity:
+                            type: number
+                            example: 2
+                          borrowedQuantity:
+                            type: number
+                            example: 0
+                          id:
+                            type: string
+                            format: uuid
+                            example: "95e7731f-170d-4744-bb91-81e3cd1e6203"
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-05-23T12:46:55.115Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-05-23T12:46:55.115Z"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          example: "Create Book Failed"
+                        detail:
+                          type: string
+                          example: "Book with code: dddd already exists"
+    get:
+      summary: Retrieve a list of books
+      responses:
+        '200':
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: "book"
+                        id:
+                          type: string
+                          format: uuid
+                          example: "9380a733-3b1d-4946-883c-411bbe730f4b"
+                        attributes:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                              example: "9380a733-3b1d-4946-883c-411bbe730f4b"
+                            createdAt:
+                              type: string
+                              format: date-time
+                              example: "2024-05-23T06:56:54.250Z"
+                            updatedAt:
+                              type: string
+                              format: date-time
+                              example: "2024-05-23T09:06:17.462Z"
+                            code:
+                              type: string
+                              example: "ads"
+                            title:
+                              type: string
+                              example: "test"
+                            author:
+                              type: string
+                              example: "asds"
+                            stock:
+                              type: number
+                              example: 2
+                            availableQuantity:
+                              type: number
+                              example: 2
+                            borrowedQuantity:
+                              type: number
+                              example: 0
+  /member:
+    post:
+      summary: Create a new member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: "CreateMemberDto"
+                    attributes:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "test"
+                        code:
+                          type: string
+                          example: "aassd"
+      responses:
+        '200':
+          description: Member created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: "member"
+                      id:
+                        type: string
+                        example: "ead3c3eb-d5f8-425a-b9bf-ee50f250d482"
+                      attributes:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: "aassd"
+                          name:
+                            type: string
+                            example: "test"
+                          penaltyStatus:
+                            type: boolean
+                            example: false
+                          penaltyEndDate:
+                            type: string
+                            format: date-time
+                            nullable: true
+                          id:
+                            type: string
+                            example: "ead3c3eb-d5f8-425a-b9bf-ee50f250d482"
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2024-05-23T09:17:46.028Z"
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: "2024-05-23T09:17:46.028Z"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        detail:
+                          type: string
+    get:
+      summary: Retrieve a list of members
+      responses:
+        '200':
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: "object"
+                        id:
+                          type: string
+                          example: "306dbc37-7a52-4ccd-a182-6779d6e07757"
+                        attributes:
+                          type: object
+                          properties:
+                            memberId:
+                              type: string
+                              example: "306dbc37-7a52-4ccd-a182-6779d6e07757"
+                            memberCode:
+                              type: string
+                              example: "aass"
+                            memberName:
+                              type: string
+                              example: "test"
+                            memberPenaltyStatus:
+                              type: boolean
+                              example: true
+                            memberPenaltyEndDate:
+                              type: string
+                              format: date-time
+                              example: "2024-05-26T09:08:45.585Z"
+                            borrowingcount:
+                              type: string
+                              example: "0"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        detail:
+                          type: string
+  /borrowing:
+    post:
+      summary: Create a new borrowing transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: "CreateBorrowingDto"
+                    attributes:
+                      type: object
+                      properties:
+                        memberId:
+                          type: string
+                          example: "737906c0-d93d-4df8-824b-ca277260896d"
+                        bookId:
+                          type: string
+                          example: "b0f6ffbf-7a62-4363-b173-c53580c42f71"
+      responses:
+        '200':
+          description: Successful borrowing transaction
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  included:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        id:
+                          type: string
+                        attributes:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: string
+                      attributes:
+                        type: object
+                        properties:
+                          borrowDate:
+                            type: string
+                            format: date-time
+                          isReturned:
+                            type: boolean
+                          dueDate:
+                            type: string
+                            format: date-time
+                          returnDate:
+                            type: string
+                            format: date-time
+                          id:
+                            type: string
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                            format: date-time
+                      relationships:
+                        type: object
+                        properties:
+                          memberId:
+                            type: object
+                            properties:
+                              data:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
+                                  id:
+                                    type: string
+                          bookId:
+                            type: object
+                            properties:
+                              data:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
+                                  id:
+                                    type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        detail:
+                          type: string
+  /borrowing/return:
+    post:
+      summary: Return a borrowed book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: "CreateBorrowingDto"
+                    attributes:
+                      type: object
+                      properties:
+                        memberId:
+                          type: string
+                          example: "737906c0-d93d-4df8-824b-ca277260896d"
+                        bookId:
+                          type: string
+                          example: "b0f6ffbf-7a62-4363-b173-c53580c42f71"
+      responses:
+        '200':
+          description: Successful return of the borrowed book
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  included:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        id:
+                          type: string
+                        attributes:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: string
+                      attributes:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                            format: date-time
+                          borrowDate:
+                            type: string
+                            format: date-time
+                          returnDate:
+                            type: string
+                            format: date-time
+                          dueDate:
+                            type: string
+                            format: date-time
+                          isReturned:
+                            type: boolean
+                      relationships:
+                        type: object
+                        properties:
+                          bookId:
+                            type: object
+                            properties:
+                              data:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
+                                  id:
+                                    type: string
+                          memberId:
+                            type: object
+                            properties:
+                              data:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
+                                  id:
+                                    type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        detail:
+                          type: string

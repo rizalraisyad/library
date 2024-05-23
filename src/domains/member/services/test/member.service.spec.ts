@@ -24,7 +24,7 @@ describe('MemberUseCase', () => {
         .spyOn(memberRepository, 'saveMember')
         .mockResolvedValue(responseMember);
 
-      expect(await memberService.createMember(responseMember)).toBe(
+      expect(await memberService.saveMember(responseMember)).toBe(
         responseMember,
       );
     });
@@ -42,6 +42,40 @@ describe('MemberUseCase', () => {
       expect(
         await memberService.findMemberByCode(responseMember.code),
       ).toStrictEqual([responseMember]);
+    });
+  });
+
+  describe('findMemberById', () => {
+    it('should return a member with the given id', async () => {
+      const memberId = '1';
+      const member = new Member({});
+      jest.spyOn(memberRepository, 'findMemberById').mockResolvedValue(member);
+
+      const result = await memberService.findMemberById(memberId);
+
+      expect(result).toEqual(member);
+    });
+
+    it('should return null if no member is found with the given id', async () => {
+      const memberId = '1';
+      jest.spyOn(memberRepository, 'findMemberById').mockResolvedValue(null);
+
+      const result = await memberService.findMemberById(memberId);
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('findMembersWithBorrowingCount', () => {
+    it('should return a list of members with borrowing count', async () => {
+      const members = [new Member({}), new Member({}), new Member({})];
+      jest
+        .spyOn(memberRepository, 'findMembersWithBorrowingCount')
+        .mockResolvedValue(members);
+
+      const result = await memberService.findMembersWithBorrowingCount();
+
+      expect(result).toEqual(members);
     });
   });
 });
